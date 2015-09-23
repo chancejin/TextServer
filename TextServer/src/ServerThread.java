@@ -13,8 +13,12 @@ public class ServerThread extends Thread{
 	BufferedReader buffer;
 	BufferedWriter bufferWriter;
 	Vector<ServerThread> connectList;
+	
 	int itsme = 0;
+	int myState = 0;
 	String dest = null;
+	int destIndex = 13;
+	String destIP = null;
 	
 //	public ServerThread(Vector<ServerThread> connectList, Socket socket) {
 //		this.connectList = connectList;
@@ -60,6 +64,22 @@ public class ServerThread extends Thread{
 			if(msg.startsWith("dest ")){
 				connectList.get(itsme).dest = msg.substring(5);
 				System.out.println(connectList.get(itsme).dest);
+				// DB!!!!!!!!!!!!!!!!!!!!!!! update!!!!!!
+				// find a destination's ip by DB
+				destIP = "203.229.246.93";
+				for(int i=0;i<connectList.size();i++){
+					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
+						destIndex = i;
+						System.out.println("destIP = "+destIP);
+						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());
+					}
+					//test
+					else{
+						System.out.println("destIP = "+destIP);
+						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());						
+					}
+				}
+				send("StartCall ");
 				return null;
 			}
 		} catch (IOException e) {
@@ -70,22 +90,28 @@ public class ServerThread extends Thread{
 	
 	//메시지 전송
 	public void send(String msg){
-		try {
-			for(int i=0;i<connectList.size();i++){
-				ServerThread st = connectList.get(i);
-				System.out.println("i = "+i);
-				System.out.println("this.itsme = "+this.itsme);
-				System.out.println("st.istme = "+st.itsme);
-				if(i != itsme && !(msg.isEmpty())){
-					System.out.println(i+"한테 보낸다!");		
-					st.bufferWriter.write(msg+"\n");
-					st.bufferWriter.flush();
-				}
+		if(msg.startsWith("StartCall ")){
+			ServerThread st = connectList.get(itsme);
+			ServerThread std = connectList.get(destIndex);
+			// DB!!!!!!!!!!!!!!!!!!!!!
+			try {
+				st.bufferWriter.write(msg+std.myState+"\n");
+				st.bufferWriter.flush();
+				std.bufferWriter.write(msg+st.myState+"\n");
+				std.bufferWriter.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		
+		else{
+			ServerThread st = connectList.get(destIndex);
+			try {
+				st.bufferWriter.write(msg);
+				st.bufferWriter.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 }
