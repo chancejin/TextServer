@@ -20,18 +20,6 @@ public class ServerThread extends Thread{
 	int destIndex = 13;
 	String destIP = null;
 	
-//	public ServerThread(Vector<ServerThread> connectList, Socket socket) {
-//		this.connectList = connectList;
-//		this.client = socket;
-//		this.itsme = connectList.size();
-//		try {
-//			buffer = new BufferedReader(new InputStreamReader((client.getInputStream())));
-//			bufferWriter = new BufferedWriter(new OutputStreamWriter((client.getOutputStream())));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
 	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest){
 		this.connectList = connectList;
 		this.client = socket;
