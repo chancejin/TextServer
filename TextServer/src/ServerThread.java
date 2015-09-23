@@ -14,14 +14,29 @@ public class ServerThread extends Thread{
 	BufferedWriter bufferWriter;
 	Vector<ServerThread> connectList;
 	int itsme = 0;
+	String dest = null;
 	
-	public ServerThread(Vector<ServerThread> connectList, Socket socket) {
+//	public ServerThread(Vector<ServerThread> connectList, Socket socket) {
+//		this.connectList = connectList;
+//		this.client = socket;
+//		this.itsme = connectList.size();
+//		try {
+//			buffer = new BufferedReader(new InputStreamReader((client.getInputStream())));
+//			bufferWriter = new BufferedWriter(new OutputStreamWriter((client.getOutputStream())));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest){
 		this.connectList = connectList;
 		this.client = socket;
 		this.itsme = connectList.size();
+		this.dest = dest;
+		
 		try {
-			buffer = new BufferedReader(new InputStreamReader((client.getInputStream())));
-			bufferWriter = new BufferedWriter(new OutputStreamWriter((client.getOutputStream())));
+		buffer = new BufferedReader(new InputStreamReader((client.getInputStream())));
+		bufferWriter = new BufferedWriter(new OutputStreamWriter((client.getOutputStream())));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -30,7 +45,9 @@ public class ServerThread extends Thread{
 	public void run() {
 		while(true){
 			String msg = listen();
-			send(msg);
+			if(msg != null){
+				send(msg);
+			}
 		}
 	}
 	
@@ -40,6 +57,11 @@ public class ServerThread extends Thread{
 		try {
 			msg= buffer.readLine();
 			System.out.println("msg:"+msg);
+			if(msg.startsWith("dest ")){
+				connectList.get(itsme).dest = msg.substring(5);
+				System.out.println(connectList.get(itsme).dest);
+				return null;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

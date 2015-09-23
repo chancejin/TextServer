@@ -7,7 +7,7 @@ import java.util.Vector;
 public class ChatServer {
 	
 	//서버소켓 - 클라이언트의 접속을 받아들이는 클래스
-	int port=50000;
+	int port=8080;
 	ServerSocket server;
 	
 	Vector<ServerThread> connectList;
@@ -28,7 +28,7 @@ public class ChatServer {
 				System.out.println(ip+"-접속자 발견");
 				
 				//대화용 쓰레드 생성 및 소켓
-				ServerThread serverThread = new ServerThread(connectList, client);
+				ServerThread serverThread = new ServerThread(connectList, client, null);
 				System.out.println("start");
 				serverThread.start();
 				
