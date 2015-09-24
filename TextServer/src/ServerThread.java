@@ -80,6 +80,9 @@ public class ServerThread extends Thread{
 				send("StartCall ");
 				return null;
 			}
+			else if(msg.startsWith("StopCall ")){
+				send("StopCall ");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -88,7 +91,7 @@ public class ServerThread extends Thread{
 	
 	//硫붿떆吏� �쟾�넚
 	public void send(String msg){
-		if(msg.startsWith("StartCall ")){
+		if(msg.startsWith("StartCall ")||msg.startsWith("StopCall ")){
 			ServerThread st = connectList.get(itsme);
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
