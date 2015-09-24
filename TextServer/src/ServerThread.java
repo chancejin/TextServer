@@ -43,7 +43,7 @@ public class ServerThread extends Thread{
 		}
 	}
 	
-	//메시지 청취
+	//硫붿떆吏� 泥�痍�
 	public String listen(){
 		String msg="";
 		try {
@@ -54,7 +54,12 @@ public class ServerThread extends Thread{
 				System.out.println(connectList.get(itsme).dest);
 				// DB!!!!!!!!!!!!!!!!!!!!!!! update!!!!!!
 				// find a destination's ip by DB
-				destIP = "203.229.246.93";
+				if(connectList.get(itsme).dest.equals("01097983036")){
+					destIP = "211.48.46.156";
+				}
+				else{
+					destIP = "211.48.46.145";
+				}
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
@@ -76,7 +81,7 @@ public class ServerThread extends Thread{
 		return msg;
 	}
 	
-	//메시지 전송
+	//硫붿떆吏� �쟾�넚
 	public void send(String msg){
 		if(msg.startsWith("StartCall ")){
 			ServerThread st = connectList.get(itsme);
