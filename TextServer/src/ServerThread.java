@@ -110,7 +110,7 @@ public class ServerThread extends Thread{
 		else{
 			ServerThread st = connectList.get(destIndex);
 			try {
-				st.bufferWriter.write(msg);
+				st.bufferWriter.write(msg+"\n");
 				st.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
