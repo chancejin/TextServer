@@ -21,6 +21,7 @@ public class ServerThread extends Thread{
 	String dest = null;
 	int destIndex = 13;
 	String destIP = null;
+	int destState = 0;
 	
 	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest){
 		this.connectList = connectList;
@@ -60,18 +61,19 @@ public class ServerThread extends Thread{
 					Class.forName("com.mysql.jdbc.Driver");
 					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_ttong", "root", "");
 					
-					PreparedStatement pStmt = conn.prepareStatement("select ip_address from user_info where phone_number=?");
+					PreparedStatement pStmt = conn.prepareStatement("select ip_address, is_disabled from user_info where phone_number=?");
 					pStmt.setString(1, dest);
 					
 					ResultSet rset = pStmt.executeQuery();
 					while(rset.next()) {
 						destIP = rset.getString("ip_address");
+						destState = Integer.parseInt(rset.getString("is_disabled"));
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
