@@ -55,19 +55,24 @@ public class ServerThread extends Thread{
 				// DB!!!!!!!!!!!!!!!!!!!!!!! update!!!!!!
 				// find a destination's ip by DB
 				if(connectList.get(itsme).dest.equals("01097983036")){
+					System.out.println("dest - 01097983036");
 					destIP = "211.48.46.156";
 				}
 				else{
 					destIP = "211.48.46.145";
+					System.out.println("dest - 01055555555");
 				}
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
+						System.out.println("i = "+i);
+						System.out.println("destIndex = "+destIndex);
 						System.out.println("destIP = "+destIP);
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());
 					}
 					//test
 					else{
+						System.out.println("i = "+i);
 						System.out.println("destIP = "+destIP);
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());						
 					}
