@@ -37,13 +37,12 @@ public class ServerThread extends Thread{
 	public void run() {
 		while(true){
 			String msg = listen();
-			if(msg != null){
-				if(msg.startsWith("StopCall ")){
-					send(msg);
-					this.connectList.remove(destIndex);
-					this.connectList.remove(itsme);
-					break;
-				}
+			if(msg != null && msg.startsWith("StopCall ")){
+				this.connectList.remove(destIndex);
+				this.connectList.remove(itsme);
+				break;
+			}
+			else if(msg != null){
 				send(msg);
 			}
 		}
