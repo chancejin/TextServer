@@ -40,6 +40,12 @@ public class ServerThread extends Thread{
 			if(msg != null){
 				send(msg);
 			}
+			else if(msg.equals("StopCall ")){
+				send(msg);
+				this.connectList.remove(destIndex);
+				this.connectList.remove(itsme);
+				break;
+			}
 		}
 	}
 	
@@ -79,12 +85,6 @@ public class ServerThread extends Thread{
 				}
 				send("StartCall ");
 				return null;
-			}
-			else if(msg.startsWith("StopCall ")){
-				send("StopCall ");
-			}
-			else{
-				send(msg);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
