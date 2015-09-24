@@ -1,11 +1,13 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Vector;
 
 public class ServerThread extends Thread{
@@ -52,9 +54,24 @@ public class ServerThread extends Thread{
 			if(msg.startsWith("dest ")){
 				connectList.get(itsme).dest = msg.substring(5);
 				System.out.println(connectList.get(itsme).dest);
-				// DB!!!!!!!!!!!!!!!!!!!!!!! update!!!!!!
-				// find a destination's ip by DB
-				destIP = "203.229.246.93";
+				
+				// find a destination's ip address from DB
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_ttong", "root", "");
+					
+					PreparedStatement pStmt = conn.prepareStatement("select ip_address from user_info where phone_number=?");
+					pStmt.setString(1, dest);
+					
+					ResultSet rset = pStmt.executeQuery();
+					while(rset.next()) {
+						destIP = rset.getString("ip_address");
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
