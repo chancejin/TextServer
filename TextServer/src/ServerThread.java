@@ -40,7 +40,7 @@ public class ServerThread extends Thread{
 			if(msg != null){
 				send(msg);
 			}
-			else if(msg.equals("StopCall ")){
+			if(msg.equals("StopCall ")){
 				send(msg);
 				this.connectList.remove(destIndex);
 				this.connectList.remove(itsme);
