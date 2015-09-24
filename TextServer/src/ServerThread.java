@@ -83,6 +83,9 @@ public class ServerThread extends Thread{
 			else if(msg.startsWith("StopCall ")){
 				send("StopCall ");
 			}
+			else{
+				send(msg);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
