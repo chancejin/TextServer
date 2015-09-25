@@ -92,8 +92,6 @@ public class ServerThread extends Thread{
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());						
 					}
 				}
-				send("StartCall ");
-				return null;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
