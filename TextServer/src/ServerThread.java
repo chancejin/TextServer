@@ -1,11 +1,14 @@
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Vector;
 
 public class ServerThread extends Thread{
@@ -19,6 +22,7 @@ public class ServerThread extends Thread{
 	String dest = null;
 	int destIndex = 13;
 	String destIP = null;
+	int destState = 0;
 	
 	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest){
 		this.connectList = connectList;
@@ -48,7 +52,7 @@ public class ServerThread extends Thread{
 		}
 	}
 	
-	//硫붿떆吏� 泥�痍�
+	//메시지 청취
 	public String listen(){
 		String msg="";
 		try {
@@ -57,27 +61,33 @@ public class ServerThread extends Thread{
 			if(msg.startsWith("dest ")){
 				connectList.get(itsme).dest = msg.substring(5);
 				System.out.println(connectList.get(itsme).dest);
-				// DB!!!!!!!!!!!!!!!!!!!!!!! update!!!!!!
-				// find a destination's ip by DB
-				if(connectList.get(itsme).dest.equals("01097983036")){
-					System.out.println("dest - 01097983036");
-					destIP = "211.48.46.156";
+				
+				// find a destination's ip address from DB
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_ttong", "root", "");
+					
+					PreparedStatement pStmt = conn.prepareStatement("select ip_address, is_disabled from user_info where phone_number=?");
+					pStmt.setString(1, dest);
+					
+					ResultSet rset = pStmt.executeQuery();
+					while(rset.next()) {
+						destIP = rset.getString("ip_address");
+						destState = Integer.parseInt(rset.getString("is_disabled"));
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else{
-					destIP = "211.48.46.145";
-					System.out.println("dest - 01055555555");
-				}
+
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
-						System.out.println("i = "+i);
-						System.out.println("destIndex = "+destIndex);
 						System.out.println("destIP = "+destIP);
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());
 					}
 					//test
 					else{
-						System.out.println("i = "+i);
 						System.out.println("destIP = "+destIP);
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());						
 					}
@@ -91,15 +101,37 @@ public class ServerThread extends Thread{
 		return msg;
 	}
 	
-	//硫붿떆吏� �쟾�넚
+	//메시지 전송
 	public void send(String msg){
-		if(msg.startsWith("StartCall ")||msg.startsWith("StopCall ")){
+		if(msg.startsWith("StopCall ")){
 			ServerThread st = connectList.get(itsme);
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
 			try {
-				st.bufferWriter.write(msg+std.myState+"\n");
+				st.bufferWriter.write(msg+"\n");
 				st.bufferWriter.flush();
+				std.bufferWriter.write(msg+"\n");
+				std.bufferWriter.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(msg.startsWith("StartCall ")){
+			ServerThread st = connectList.get(itsme);
+			ServerThread std = connectList.get(destIndex);
+			// DB!!!!!!!!!!!!!!!!!!!!!
+			try{
+				std.bufferWriter.write(msg+st.myState+"\n");
+				std.bufferWriter.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(msg.startsWith("OkayCall ")){
+			ServerThread st = connectList.get(itsme);
+			ServerThread std = connectList.get(destIndex);
+			// DB!!!!!!!!!!!!!!!!!!!!!
+			try {
 				std.bufferWriter.write(msg+st.myState+"\n");
 				std.bufferWriter.flush();
 			} catch (IOException e) {
@@ -117,4 +149,5 @@ public class ServerThread extends Thread{
 		}
 	}
 	
+
 }
