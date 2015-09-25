@@ -19,6 +19,9 @@ public class ServerThread extends Thread{
 	
 	int itsme = 0;
 	int myState = 0;
+	String myName = null;
+	String myPhone = null;
+	
 	String dest = null;
 	int destIndex = 13;
 	String destIP = null;
@@ -58,6 +61,7 @@ public class ServerThread extends Thread{
 		try {
 			msg= buffer.readLine();
 			System.out.println("msg:"+msg);
+			
 			if(msg.startsWith("dest ")){
 				connectList.get(itsme).dest = msg.substring(5);
 				System.out.println(connectList.get(itsme).dest);
@@ -65,7 +69,7 @@ public class ServerThread extends Thread{
 				// find a destination's ip address from DB
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
-					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_ttong", "root", "");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://14.63.226.208:3306/db_ttong", "root", "");
 					
 					PreparedStatement pStmt = conn.prepareStatement("select ip_address, is_disabled from user_info where phone_number=?");
 					pStmt.setString(1, dest);
@@ -83,6 +87,8 @@ public class ServerThread extends Thread{
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
+						connectList.get(destIndex).destIndex = itsme;
+						
 						System.out.println("destIP = "+destIP);
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());
 					}
@@ -92,7 +98,13 @@ public class ServerThread extends Thread{
 						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());						
 					}
 				}
-				send("StartCall ");
+			}
+			else if(msg.startsWith("MyName ")){
+				this.myName = msg.substring(7);
+				return null;
+			}
+			else if(msg.startsWith("MyPhone ")){
+				this.myPhone = msg.substring(8);
 				return null;
 			}
 		} catch (IOException e) {
@@ -121,7 +133,7 @@ public class ServerThread extends Thread{
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
 			try{
-				std.bufferWriter.write(msg+st.myState+"\n");
+				std.bufferWriter.write(msg+"/"+st.myState+"/"+st.myName+"/"+st.myPhone+"\n");
 				std.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -132,7 +144,7 @@ public class ServerThread extends Thread{
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
 			try {
-				std.bufferWriter.write(msg+st.myState+"\n");
+				std.bufferWriter.write(msg+"/"+st.myState+"/"+st.myName+"/"+st.myPhone+"\n");
 				std.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
