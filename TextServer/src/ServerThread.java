@@ -69,7 +69,7 @@ public class ServerThread extends Thread{
 				// find a destination's ip address from DB
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
-					Connection conn = DriverManager.getConnection("jdbc:mysql://14.63.226.208:3306/db_ttong", "root", "");
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_ttong", "root", "");
 					
 					PreparedStatement pStmt = conn.prepareStatement("select ip_address, is_disabled from user_info where phone_number=?");
 					pStmt.setString(1, dest);
@@ -83,16 +83,16 @@ public class ServerThread extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-//				if(connectList.get(itsme).dest.equals("010-4087-1203")){
-//					destIP = "223.62.202.72";
-//					destState = 3;
-//				}
-//				else if(connectList.get(itsme).dest.equals("010-5139-7539")){
-//					destIP = "222.108.151.149";
-//					destState = 3;
-//				}
-
+/*				
+				if(connectList.get(itsme).dest.equals("010-4087-1203")){
+					destIP = "223.62.202.72";
+					destState = 3;
+				}
+				else if(connectList.get(itsme).dest.equals("010-5139-7539")){
+					destIP = "222.108.151.149";
+					destState = 3;
+				}
+*/
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
 						destIndex = i;
@@ -152,8 +152,14 @@ public class ServerThread extends Thread{
 			ServerThread st = connectList.get(itsme);
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
+	/*		
+			if(st.dest.equals("010-4087-1203")){
+				st.myName = "";
+				st.myPhone = "010-5139-7539";
+			}
+*/
 			try {
-				std.bufferWriter.write(msg+"/"+st.myState+"/"+st.myName+"/"+st.myPhone+"\n");
+				std.bufferWriter.write(msg+"\n");
 				std.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
