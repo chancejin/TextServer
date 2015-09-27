@@ -45,6 +45,7 @@ public class ServerThread extends Thread{
 		while(true){
 			String msg = listen();
 			if(msg != null && msg.startsWith("StopCall ")){
+				send(msg);
 				this.connectList.remove(destIndex);
 				this.connectList.remove(itsme);
 				break;
@@ -114,6 +115,10 @@ public class ServerThread extends Thread{
 			}
 			else if(msg.startsWith("MyPhone ")){
 				this.myPhone = msg.substring(8);
+				return null;
+			}
+			else if(msg.startsWith("MyState ")){
+				this.myState = Integer.valueOf(msg.substring(8));
 				return null;
 			}
 		} catch (IOException e) {
