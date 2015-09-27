@@ -18,7 +18,7 @@ public class ServerThread extends Thread{
 	Vector<ServerThread> connectList;
 	
 	int itsme = 0;
-	int myState = 0;
+	int myState = 1;
 	String myName = null;
 	String myPhone = null;
 	
