@@ -67,21 +67,30 @@ public class ServerThread extends Thread{
 				System.out.println(connectList.get(itsme).dest);
 				
 				// find a destination's ip address from DB
-				try {
-					Class.forName("com.mysql.jdbc.Driver");
-					Connection conn = DriverManager.getConnection("jdbc:mysql://14.63.226.208:3306/db_ttong", "root", "");
-					
-					PreparedStatement pStmt = conn.prepareStatement("select ip_address, is_disabled from user_info where phone_number=?");
-					pStmt.setString(1, dest);
-					
-					ResultSet rset = pStmt.executeQuery();
-					while(rset.next()) {
-						destIP = rset.getString("ip_address");
-						destState = Integer.parseInt(rset.getString("is_disabled"));
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+//				try {
+//					Class.forName("com.mysql.jdbc.Driver");
+//					Connection conn = DriverManager.getConnection("jdbc:mysql://14.63.226.208:3306/db_ttong", "root", "");
+//					
+//					PreparedStatement pStmt = conn.prepareStatement("select ip_address, is_disabled from user_info where phone_number=?");
+//					pStmt.setString(1, dest);
+//					
+//					ResultSet rset = pStmt.executeQuery();
+//					while(rset.next()) {
+//						destIP = rset.getString("ip_address");
+//						destState = Integer.parseInt(rset.getString("is_disabled"));
+//					}
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
+				if(connectList.get(itsme).dest.equals("010-4087-1203")){
+					destIP = "223.62.202.72";
+					destState = 3;
+				}
+				else if(connectList.get(itsme).dest.equals("010-5139-7539")){
+					destIP = "222.108.151.149";
+					destState = 3;
 				}
 
 				for(int i=0;i<connectList.size();i++){
