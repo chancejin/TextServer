@@ -121,6 +121,10 @@ public class ServerThread extends Thread{
 				this.myState = Integer.valueOf(msg.substring(8));
 				return null;
 			}
+			else if(msg.startsWith("StopApp ")){
+				this.connectList.remove(itsme);
+				return null;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
