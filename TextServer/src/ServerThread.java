@@ -21,18 +21,20 @@ public class ServerThread extends Thread{
 	int myState = 1;
 	String myName = null;
 	String myPhone = null;
+	String mySubnetIP = null;
 	
 	String dest = null;
 	int destIndex = 13;
 	String destIP = null;
+	String destSubnetIP = null;
 	int destState = 0;
 	
-	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest){
+	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest, String myIP){
 		this.connectList = connectList;
 		this.client = socket;
 		this.itsme = connectList.size();
 		this.dest = dest;
-		
+		this.mySubnetIP = myIP;
 		try {
 		buffer = new BufferedReader(new InputStreamReader((client.getInputStream())));
 		bufferWriter = new BufferedWriter(new OutputStreamWriter((client.getOutputStream())));
@@ -79,23 +81,15 @@ public class ServerThread extends Thread{
 					while(rset.next()) {
 						destIP = rset.getString("ip_address");
 						destState = Integer.parseInt(rset.getString("is_disabled"));
+						///////!!!!!!!!!! DB에서 받아와야해!!!!
+						//destSubnetIP = ;
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-/*				
-				if(connectList.get(itsme).dest.equals("010-4087-1203")){
-					destIP = "223.62.202.72";
-					destState = 3;
-				}
-				else if(connectList.get(itsme).dest.equals("010-5139-7539")){
-					destIP = "222.108.151.149";
-					destState = 3;
-				}
-*/
 				for(int i=0;i<connectList.size();i++){
-					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
+					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)&&connectList.get(i).mySubnetIP.equals(destSubnetIP)){
 						destIndex = i;
 						connectList.get(destIndex).destIndex = itsme;
 						
@@ -109,6 +103,10 @@ public class ServerThread extends Thread{
 					}
 				}
 			}
+			else if(msg.startsWith("SubnetIP ")){
+				this.mySubnetIP = msg.substring(9);
+				//////////////!!!!!!!!!!myIP 부분을 DB에 올려야함!!! "ip_address"?이런거로 넣어야함!!
+			}
 			else if(msg.startsWith("MyName ")){
 				this.myName = msg.substring(7);
 				return null;
@@ -119,6 +117,10 @@ public class ServerThread extends Thread{
 			}
 			else if(msg.startsWith("MyState ")){
 				this.myState = Integer.valueOf(msg.substring(8));
+				return null;
+			}
+			else if(msg.startsWith("StopApp ")){
+				this.connectList.remove(itsme);
 				return null;
 			}
 		} catch (IOException e) {
