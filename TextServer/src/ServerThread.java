@@ -95,17 +95,11 @@ public class ServerThread extends Thread{
 				}
 */
 				for(int i=0;i<connectList.size();i++){
-					if(connectList.get(i).client.getInetAddress().getHostAddress().equals(destIP)){
+					if(connectList.get(i).myPhone.equals(dest)){
 						destIndex = i;
 						connectList.get(destIndex).destIndex = itsme;
 						
 						System.out.println("destIP = "+destIP);
-						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());
-					}
-					//test
-					else{
-						System.out.println("destIP = "+destIP);
-						System.out.println(connectList.get(i).client.getInetAddress().getHostAddress());						
 					}
 				}
 			}
@@ -138,29 +132,20 @@ public class ServerThread extends Thread{
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
 			try {
-				System.out.println("StoapCall 1");
 				std.bufferWriter.write(msg+"\n");
-				System.out.println("StoapCall 1");
 				std.bufferWriter.flush();
-				System.out.println("StoapCall 1");
-				st.bufferWriter.write(msg+"\n");
-				System.out.println("StoapCall 1");
-				st.bufferWriter.flush();
-				System.out.println("StoapCall 1");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			if(destIndex>itsme){
 				this.connectList.remove(destIndex);
-				System.out.println("StoapCall 1");
 				this.connectList.remove(itsme);
 				System.out.println("StopCall 2");
 			}
 			else{
 				this.connectList.remove(itsme);
-				System.out.println("StoapCall 1");
 				this.connectList.remove(destIndex);
-				System.out.println("StoapCall 3");
+				System.out.println("StopCall 3");
 			}
 		}
 		else if(msg.startsWith("StartCall ")){
@@ -177,13 +162,6 @@ public class ServerThread extends Thread{
 		else if(msg.startsWith("OkayCall ")){
 			ServerThread st = connectList.get(itsme);
 			ServerThread std = connectList.get(destIndex);
-			// DB!!!!!!!!!!!!!!!!!!!!!
-	/*		
-			if(st.dest.equals("010-4087-1203")){
-				st.myName = "";
-				st.myPhone = "010-5139-7539";
-			}
-*/
 			try {
 				std.bufferWriter.write(msg+"\n");
 				std.bufferWriter.flush();
@@ -192,10 +170,10 @@ public class ServerThread extends Thread{
 			}
 		}
 		else{
-			ServerThread st = connectList.get(destIndex);
+			ServerThread std = connectList.get(destIndex);
 			try {
-				st.bufferWriter.write(msg+"\n");
-				st.bufferWriter.flush();
+				std.bufferWriter.write(msg+"\n");
+				std.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
