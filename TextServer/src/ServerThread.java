@@ -46,8 +46,8 @@ public class ServerThread extends Thread{
 			String msg = listen();
 			if(msg != null && msg.startsWith("StopCall ")){
 				send(msg);
-				this.connectList.remove(destIndex);
-				this.connectList.remove(itsme);
+				//this.connectList.remove(destIndex);
+				//this.connectList.remove(itsme);
 				break;
 			}
 			else if(msg != null){
@@ -138,12 +138,29 @@ public class ServerThread extends Thread{
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
 			try {
-				st.bufferWriter.write(msg+"\n");
-				st.bufferWriter.flush();
+				System.out.println("StoapCall 1");
 				std.bufferWriter.write(msg+"\n");
+				System.out.println("StoapCall 1");
 				std.bufferWriter.flush();
+				System.out.println("StoapCall 1");
+				st.bufferWriter.write(msg+"\n");
+				System.out.println("StoapCall 1");
+				st.bufferWriter.flush();
+				System.out.println("StoapCall 1");
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+			if(destIndex>itsme){
+				this.connectList.remove(destIndex);
+				System.out.println("StoapCall 1");
+				this.connectList.remove(itsme);
+				System.out.println("StopCall 2");
+			}
+			else{
+				this.connectList.remove(itsme);
+				System.out.println("StoapCall 1");
+				this.connectList.remove(destIndex);
+				System.out.println("StoapCall 3");
 			}
 		}
 		else if(msg.startsWith("StartCall ")){
