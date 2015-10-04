@@ -21,17 +21,17 @@ public class ServerThread extends Thread{
 	int myState = 1;
 	String myName = null;
 	String myPhone = null;
+	String mySubnetIP = null;
 	
 	String dest = null;
 	int destIndex = 13;
 	String destIP = null;
 	int destState = 0;
 	
-	public ServerThread(Vector<ServerThread> connectList, Socket socket, String dest){
+	public ServerThread(Vector<ServerThread> connectList, Socket socket){
 		this.connectList = connectList;
 		this.client = socket;
 		this.itsme = connectList.size();
-		this.dest = dest;
 		
 		try {
 		buffer = new BufferedReader(new InputStreamReader((client.getInputStream())));
@@ -46,8 +46,6 @@ public class ServerThread extends Thread{
 			String msg = listen();
 			if(msg != null && msg.startsWith("StopCall ")){
 				send(msg);
-				//this.connectList.remove(destIndex);
-				//this.connectList.remove(itsme);
 				break;
 			}
 			else if(msg != null){
@@ -84,16 +82,6 @@ public class ServerThread extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-/*				
-				if(connectList.get(itsme).dest.equals("010-4087-1203")){
-					destIP = "223.62.202.72";
-					destState = 3;
-				}
-				else if(connectList.get(itsme).dest.equals("010-5139-7539")){
-					destIP = "222.108.151.149";
-					destState = 3;
-				}
-*/
 				for(int i=0;i<connectList.size();i++){
 					if(connectList.get(i).myPhone.equals(dest)){
 						destIndex = i;
@@ -109,6 +97,23 @@ public class ServerThread extends Thread{
 			}
 			else if(msg.startsWith("MyPhone ")){
 				this.myPhone = msg.substring(8);
+			// DB에서 myPhone을 키값으로 subnetIP를 가져와서 this.mySubnetIP에 저장한다.
+				try {
+                                        Class.forName("com.mysql.jdbc.Driver");
+                                        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_ttong", "root", "");
+
+                                        PreparedStatement pStmt = conn.prepareStatement("select ip_address_sub from user_info where phone_number=?");
+                                        pStmt.setString(1, this.myPhone);
+
+                                        ResultSet rset = pStmt.executeQuery();
+                                        while(rset.next()) {
+                                                this.mySubnetIP = rset.getString("ip_address_sub");
+                                        }
+                                } catch (Exception e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                }
+	
 				return null;
 			}
 			else if(msg.startsWith("MyState ")){
@@ -140,12 +145,10 @@ public class ServerThread extends Thread{
 			if(destIndex>itsme){
 				this.connectList.remove(destIndex);
 				this.connectList.remove(itsme);
-				System.out.println("StopCall 2");
 			}
 			else{
 				this.connectList.remove(itsme);
 				this.connectList.remove(destIndex);
-				System.out.println("StopCall 3");
 			}
 		}
 		else if(msg.startsWith("StartCall ")){
@@ -153,7 +156,7 @@ public class ServerThread extends Thread{
 			ServerThread std = connectList.get(destIndex);
 			// DB!!!!!!!!!!!!!!!!!!!!!
 			try{
-				std.bufferWriter.write(msg+"/"+st.myState+"/"+st.myName+"/"+st.myPhone+"\n");
+				std.bufferWriter.write(msg+"/"+st.myState+"/"+st.myName+"/"+st.myPhone+"/"+st.mySubnetIP+"\n");
 				std.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -163,7 +166,7 @@ public class ServerThread extends Thread{
 			ServerThread st = connectList.get(itsme);
 			ServerThread std = connectList.get(destIndex);
 			try {
-				std.bufferWriter.write(msg+"\n");
+				std.bufferWriter.write(msg+"/"+st.mySubnetIP+"\n");
 				std.bufferWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

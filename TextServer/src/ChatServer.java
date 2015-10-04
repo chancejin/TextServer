@@ -27,11 +27,8 @@ public class ChatServer {
 				String ip = inet.getHostAddress();
 				System.out.println(ip+"-접속자 발견");
 				
-				InetAddress local = client.getLocalAddress();
-				String localIP = local.getHostAddress();
-				System.out.println(localIP+"- 접속자 localIP");
 				//대화용 쓰레드 생성 및 소켓
-				ServerThread serverThread = new ServerThread(connectList, client, null);
+				ServerThread serverThread = new ServerThread(connectList, client);
 				System.out.println("start");
 				serverThread.start();
 				
