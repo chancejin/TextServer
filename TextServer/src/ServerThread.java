@@ -63,7 +63,7 @@ public class ServerThread extends Thread{
 			
 			if(msg.startsWith("dest ")){
 				connectList.get(itsme).dest = msg.substring(5);
-				System.out.println(connectList.get(itsme).dest);
+				//System.out.println(connectList.get(itsme).dest);
 				
 				// find a destination's ip address from DB
 				try {
@@ -87,9 +87,10 @@ public class ServerThread extends Thread{
 						destIndex = i;
 						connectList.get(destIndex).destIndex = itsme;
 						
-						System.out.println("destIP = "+destIP);
+					//	System.out.println("destIP = "+destIP);
 					}
 				}
+				return null;
 			}
 			else if(msg.startsWith("MyName ")){
 				this.myName = msg.substring(7);

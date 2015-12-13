@@ -19,7 +19,8 @@ public class ChatServer {
 		try {
 			//서버객체 생성
 			server = new ServerSocket(port);
-			
+			System.out.println("Server ON");
+		
 			while(true){
 				//접속자가 접속하는지 확인
 				//접속자가 있을때까지 대기,지연상태에 있다.
@@ -30,11 +31,10 @@ public class ChatServer {
 				
 				//대화용 쓰레드 생성 및 소켓
 				ServerThread serverThread = new ServerThread(connectList, client);
-				System.out.println("start");
 				serverThread.start();
 				
 				connectList.add(serverThread);
-				System.out.println("현재 접속자수:"+connectList.size());
+				System.out.println("login - ");
 			}
 			
 			
